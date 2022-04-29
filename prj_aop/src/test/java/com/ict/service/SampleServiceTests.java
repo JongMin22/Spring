@@ -15,10 +15,14 @@ public class SampleServiceTests {
 	@Autowired
 	private SampleService service;
 	
-	@Test
+	// @Test
 	public void testClass() {
 		log.info(service);
 		log.info(service.getClass());
 		
 	}
-}
+	@Test
+	public void testAdd() throws Exception{
+	log.info(service.doAdd("123", "555"));
+	}
+	}
