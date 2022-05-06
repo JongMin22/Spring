@@ -13,15 +13,15 @@ public class SecurityController {
 	
 	@GetMapping("/all")
 	public void doAll() {
-		log.info("ëª¨ë“  íšŒì›ì´ìš©ê°€ëŠ¥í•œ all");
+		log.info("All ÆäÀÌÁö");
 	}
 	@GetMapping("/member")
 	public void doMember() {
-		log.info("È¸ï¿½ï¿½ï¿½é¸¸ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Member ï¿½ï¿½ï¿½ï¿½");
+		log.info("Memner ÆäÀÌÁö");
 	}
 	@GetMapping("/admin")
 	public void doAdmin() {
-		log.info("ï¿½î¿µï¿½Ú¸ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Admin ï¿½ï¿½ï¿½ï¿½");
+		log.info("°ü¸®ÀÚ ÆäÀÌÁö ");
 	}
 
 }
