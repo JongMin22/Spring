@@ -4,6 +4,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 
 import lombok.extern.log4j.Log4j;
 
@@ -13,23 +14,32 @@ public class CommonController {
 	
 	@GetMapping("/accessError")
 	public void accessDenied(Authentication auth, Model model){
-		log.info("Á¢±Ù °ÅºÎ : " + auth);
+		log.info("ì ‘ê·¼ê±°ë¶€ : " + auth);
 		
-		model.addAttribute("errorMessage","Á¢±Ù °ÅºÎ");
+		model.addAttribute("errorMessage","ì ‘ê·¼ ê±°ë¶€");
 	}
 	
 	
 	@GetMapping("/customLogin")
 	public void loginInput(String error, String logout, Model model){
-			log.info("error ¿©ºÎ : " + error);
-			log.info("logout ¿©ºÎ : " + logout);
+			log.info("error : " + error);
+			log.info("logout : " + logout);
 			
 			if(error != null) {
-					model.addAttribute("error", "·Î±×ÀÎ °ü·Ã ¿¡·¯ÀÔ´Ï´Ù. °èÁ¤È®ÀÎÀ» ´Ù½Ã ÇØÁÖ¼¼¿ä.");
+					model.addAttribute("error", "ï¿½Î±ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ô´Ï´ï¿½. ï¿½ï¿½ï¿½ï¿½È®ï¿½ï¿½ï¿½ï¿½ ï¿½Ù½ï¿½ ï¿½ï¿½ï¿½Ö¼ï¿½ï¿½ï¿½.");
 			}
 			if(logout != null) {
-				model.addAttribute("logout", "·Î±×¾Æ¿ô Çß½À´Ï´Ù..");
+				model.addAttribute("logout", "ï¿½Î±×¾Æ¿ï¿½ ï¿½ß½ï¿½ï¿½Ï´ï¿½..");
 			}
+	}
+	
+	@GetMapping("/customLogout")
+	public void logoutGet() {
+		log.info("ï¿½Î±×¾Æ¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ìµï¿½");
+	}
+	@PostMapping("/customLogout")
+	public void logoutPost() {
+		log.info("ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Î±×¾Æ¿ï¿½ï¿½ï¿½Ã» Ã³ï¿½ï¿½");
 	}
 	
 }
