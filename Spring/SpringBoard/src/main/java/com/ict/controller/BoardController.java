@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
@@ -15,9 +18,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.ict.domain.BoardAttachVO;
 import com.ict.domain.BoardVO;
 import com.ict.domain.Criteria;
 import com.ict.domain.PageMaker;
@@ -27,7 +32,7 @@ import com.ict.service.BoardService;
 
 import lombok.extern.log4j.Log4j;
 
-// ÄÁÆ®·Ñ·¯°¡ ÄÁÆ®·Ñ·¯ ±â´ÉÀ» ÇÒ ¼ö ÀÖµµ·Ï Ã³¸®ÇØÁÖ¼¼¿ä.
+// ï¿½ï¿½Æ®ï¿½Ñ·ï¿½ï¿½ï¿½ ï¿½ï¿½Æ®ï¿½Ñ·ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ ï¿½Öµï¿½ï¿½ï¿½ Ã³ï¿½ï¿½ï¿½ï¿½ï¿½Ö¼ï¿½ï¿½ï¿½.
 @Controller
 
 @Service
@@ -35,28 +40,28 @@ import lombok.extern.log4j.Log4j;
 @RequestMapping("/board")
 public class BoardController {
 
-	// ÄÁÆ®·Ñ·¯´Â Service¸¸ È£ÃâÇÏµµ·Ï ±¸Á¶¸¦ ¹Ù²ß´Ï´Ù.
-	// Service¸¦ BoardController³»ºÎ¿¡¼­ ¾µ ¼ö ÀÖµµ·Ï ¼±¾ð/ÁÖÀÔÇØÁÖ¼¼¿ä.
+	// ï¿½ï¿½Æ®ï¿½Ñ·ï¿½ï¿½ï¿½ Serviceï¿½ï¿½ È£ï¿½ï¿½ï¿½Ïµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ù²ß´Ï´ï¿½.
+	// Serviceï¿½ï¿½ BoardControllerï¿½ï¿½ï¿½Î¿ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ ï¿½Öµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½/ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¼ï¿½ï¿½ï¿½.
 	@Autowired
 	private BoardService service;
 	
 	
 	@GetMapping(value="/boardList")
-	//@RequestParam(name="»ç¿ëÇÒº¯¼ö¸í", defaultValue="ÁöÁ¤ÇÏ°í½ÍÀº±âº»°ª")
-	//@PathVariableÀÇ °æ¿ì defaultValue¸¦ Á÷Á¢ÁÙ¼ø¾øÀ¸³ª ,required = false¸¦ ÀÌ¿ëÇØ ÇÊ¼öÀÔ·ÂÀ» ¾È¹Þ°Ô Ã³¸®ÇÑ ÈÄ 
-	// ÄÁÆ®·Ñ·¯ ³»ºÎ¿¡¼­ µðÅçÆ®°ªÀ» ÀÔ·ÂÇØÁÙ¼ö ÀÖ´Ù.
+	//@RequestParam(name="ï¿½ï¿½ï¿½ï¿½Òºï¿½ï¿½ï¿½ï¿½ï¿½", defaultValue="ï¿½ï¿½ï¿½ï¿½ï¿½Ï°ï¿½ï¿½ï¿½ï¿½ï¿½âº»ï¿½ï¿½")
+	//@PathVariableï¿½ï¿½ ï¿½ï¿½ï¿½ defaultValueï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ù¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ,required = falseï¿½ï¿½ ï¿½Ì¿ï¿½ï¿½ï¿½ ï¿½Ê¼ï¿½ï¿½Ô·ï¿½ï¿½ï¿½ ï¿½È¹Þ°ï¿½ Ã³ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ 
+	// ï¿½ï¿½Æ®ï¿½Ñ·ï¿½ ï¿½ï¿½ï¿½Î¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ï¿½ï¿½ ï¿½Ô·ï¿½ï¿½ï¿½ï¿½Ù¼ï¿½ ï¿½Ö´ï¿½.
 	public String boardList(SearchCriteria cri,Model model) {
 		// if(pageNum == null) {pageNum=1L;}
 		List<BoardVO> boardList= service.getList(cri);
 		log.info(boardList);
 		model.addAttribute("boardList",boardList);
 		
-		// ¹öÆ° Ã³¸®¸¦ À§ÇØ Ãß°¡·Î ÆäÀÌÁö¸ÞÀÌÄ¿ »ý¼º ¹× ¼¼ÆÃ 
+		// ï¿½ï¿½Æ° Ã³ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ß°ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ 
 		PageMaker pageMaker = new PageMaker();
-		pageMaker.setCri(cri); // criÀÔ·Â
-		// 131´ë»ç´Ï ½ÇÁ¦·Î DB³» ±Û °³¼ö¸¦ ¹Þ¾Æ¿È
+		pageMaker.setCri(cri); // criï¿½Ô·ï¿½
+		// 131ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ DBï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¾Æ¿ï¿½
 		int countPage = service.countPageNum(cri);
-		pageMaker.setTotalBoard(countPage); // calcData()È£Ãâµµ µÇ¸é¼­ ¼ø½Ä°£¿¡ prev, next, startPage, endPage¼¼ÆÃ
+		pageMaker.setTotalBoard(countPage); // calcData()È£ï¿½âµµ ï¿½Ç¸é¼­ ï¿½ï¿½ï¿½Ä°ï¿½ï¿½ï¿½ prev, next, startPage, endPageï¿½ï¿½ï¿½ï¿½
 		model.addAttribute("pageMaker", pageMaker);
 	
 		return "board/boardList";
@@ -77,11 +82,25 @@ public class BoardController {
 	
 	@PostMapping(value="/boardInsert")
 	public String InsertBoard(BoardVO board,Model model) {
+		// ì²¨ë¶€íŒŒì¼ ë””ë²„ê¹…
+		log.info("=====================");
+		if(board.getAttachList() != null) {
+			board.getAttachList().forEach(attach -> log.info(attach));
+			
+		}
+		
 		service.insert(board);
 		
 		
 		return "redirect:/board/boardList";
 	}
+	@GetMapping(value="/getAttachList", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	@ResponseBody
+	public ResponseEntity<List<BoardAttachVO>> getAttachList(Long bno){
+		
+		return new ResponseEntity<>(service.getAttachList(bno),HttpStatus.OK);
+	} 
+	
 	@PostMapping(value="/boardDelete")
 	public String DeleteBoard(long bno,SearchCriteria cri,Model model,RedirectAttributes rttr) {
 		service.delete(bno);
@@ -92,7 +111,7 @@ public class BoardController {
 		parameters.put("pageNum", cri.getPageNum());
 		parameters.put("searchType", cri.getSearchType());
 		parameters.put("keyword", cri.getKeyword());
-		log.info("Àü´Þ Á÷Àü : " + parameters);
+		log.info("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ : " + parameters);
 		rttr.addAllAttributes(parameters);
 		
 		return "redirect:/board/boardList";
@@ -105,9 +124,9 @@ public class BoardController {
 	}
 	@GetMapping(value="/boardUpdate")
 	public String BoardUpdate(BoardVO board,SearchCriteria cri, Model model, RedirectAttributes rttr) {
-		log.info("°Ë»ö¾î : "+cri.getKeyword());
-		log.info("ÆäÀÌÁö¹øÈ£ : " + cri.getPageNum());
-		log.info("°Ë»öÁ¶°Ç : " + cri.getSearchType());
+		log.info("ï¿½Ë»ï¿½ï¿½ï¿½ : "+cri.getKeyword());
+		log.info("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È£ : " + cri.getPageNum());
+		log.info("ï¿½Ë»ï¿½ï¿½ï¿½ï¿½ï¿½ : " + cri.getSearchType());
 		service.update(board);
 		rttr.addAttribute("pageNum",cri.getPageNum());
 		rttr.addAttribute("searchType",cri.getSearchType());

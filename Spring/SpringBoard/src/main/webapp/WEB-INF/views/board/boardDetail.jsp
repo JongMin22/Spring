@@ -20,11 +20,41 @@
 	padding:10px;
 	z-index:1000;
 	}
+	
+	.uploadResult{
+		width:100$;
+		background-color : gray;
+	}
+	.uploadResult ul{
+		display: flex;
+		flex-flow:row;
+		justify-content: center;
+		align-items: center;
+	}
+	.uploadResult ul li {
+		list-style: none;
+		padding: 10px;
+		align-content: center;
+		text-align: center;
+		
+	}
+	.uploadResult ul li img{
+		width: 100px;
+		
+	}
 </style>
 </head>
 <body>
 <div class="container">
 <h1 class="text text-primary">${board.bno }번 글 상세페이지</h1>
+<div class="row">
+	<h3 class="text-primary">첨부파일</h3>
+	<div id="uploadResult">
+		<ul>
+		<!--  첨부파일이 들어갈 위치 -->
+		</ul>
+	</div>
+</div>
 <div class="row">
 <div class="col-md-9">
 	<input type="text" class="form-control" value="제목 : ${board.title }" readonly/>
@@ -45,6 +75,7 @@
 	<input type="hidden" name="searchType" value="${param.searchType}"/>
 	<input type="hidden" name="keyword" value="${param.keyword}"/>
 	<input type="submit" class="form-control" value="수정 "/>
+	<input type="hidden" name="${_csrf.parameterName }" value="${_csrf.token }"/>
 	</form>
 </div>
 <div class="col-md-6">
@@ -54,6 +85,7 @@
 	<input type="hidden" name="searchType" value="${param.searchType}"/>
 	<input type="hidden" name="keyword" value="${param.keyword}"/>
 	<input type="submit" class="form-control" value="삭제 "/>
+	<input type="hidden" name="${_csrf.parameterName }" value="${_csrf.token }"/>
 	</form>
 	</div>
 
@@ -90,7 +122,48 @@
 	<!-- 여기부터 댓글 비동기처리 자바스크립트 영역-->
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 	<script type="text/javascript">
+	var csrfHeaderName ="${_csrf.headerName}";
+	var csrfTokenValue ="${_csrf.token}";
 	var bno =${board.bno};
+	
+	(function(){
+		$.getJSON("/board/getAttachList",{bno : bno}, function(arr){
+			console.log(arr);
+			
+			var str ="";
+			
+			$(arr).each(function(i, obj){
+				
+				if(!obj.fileType){
+					var fileCallPath = encodeURIComponent(obj.uploadPath+"/" + obj.uuid + "_" + obj.fileName);
+					str += "<li "
+						+ "data-path='" + obj.uploadPath + "' data-uuid='" + obj.uuid
+						+ "' data-filename='" + obj.fileName + "' data-type='" + obj.fileType
+						+ "'><a href='/download?fileName=" + fileCallPath
+						+ "'>" + "<img src='/resources/attach.png'>"
+						+ obj.fileName + "</a>"
+						+ "<span data-file=\'" + fileCallPath + "\' data-type='file'> X </span>"
+						+ "</li>";
+					
+				} else {
+					// str += "<li>" + obj.fileName + "</li>";
+					// 수정코드 
+					var fileCallPath = encodeURIComponent(obj.uploadPath+"/s_" + obj.uuid + "_" + obj.fileName);
+					var fileCallPathOriginal = encodeURIComponent(obj.uploadPath+"/" + obj.uuid + "_" + obj.fileName);
+					console.log("fileCallPath : " + fileCallPath);
+					str += "<li "
+						+ "data-path='" + obj.uploadPath + "' data-uuid='" + obj.uuid
+						+ "' data-filename='" + obj.fileName + "' data-type='" + obj.fileType
+						+ "'><a href='/download?fileName=" + fileCallPathOriginal
+						+ "'>" + "<img src='/display?fileName="+ fileCallPath + "'>"
+						+ obj.fileName + "</a>"
+						+ "<span data-file=\'" + fileCallPath + "\' data-type='image'> X </span>"
+						+ "</li>";
+				}
+			});
+			$("#uploadResult ul").html(str);
+		}); // end getJSON 
+	})();	// end annonymoust
 	function getAllList(){
 		$.getJSON("/replies/all/" + bno , function(data){
 			let str="";
@@ -130,6 +203,9 @@
 		$.ajax({
 			type : 'post',
 			url: '/replies',
+			beforeSend : function(xhr){
+				xhr.setRequestHeader(csrfHeaderName, csrfTokenValue);
+			},
 			headers:{
 				"Content-Type" : "application/json",
 				"X-HTTP-Method-Override" : "POST"
@@ -190,6 +266,9 @@
 		$.ajax({
 			type : 'delete',
 			url : '/replies/' + rno,
+			beforeSend : function(xhr){
+				xhr.setRequestHeader(csrfHeaderName, csrfTokenValue);
+			},
 			header : {
 				"X-HTTP-Method-Override" : "DELETE"
 			},
@@ -212,6 +291,9 @@
 		$.ajax({
 			type:'patch',
 			url : '/replies/' + rno,
+			beforeSend : function(xhr){
+				xhr.setRequestHeader(csrfHeaderName, csrfTokenValue);
+			},
 			header :{
 				"Content-Type" : "application/json",
 				"X-HTTP-Method-Override" : "PATCH"

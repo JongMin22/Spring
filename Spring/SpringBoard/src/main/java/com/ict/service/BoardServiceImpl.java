@@ -7,26 +7,30 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.ict.domain.BoardAttachVO;
 import com.ict.domain.BoardVO;
 import com.ict.domain.Criteria;
 import com.ict.domain.SearchCriteria;
+import com.ict.mapper.BoardAttachMapper;
 import com.ict.mapper.BoardMapper;
 import com.ict.mapper.ReplyMapper;
 
-// BoardService ÀÎÅÍÆäÀÌ½º ±¸Çö
+// BoardService ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ì½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
-@Service // ºó ÄÁÅ×ÀÌ³Ê¿¡ µî·Ï(root-context.xml¿¡¼­ ÄÄÆ÷³ÍÆ® ½ºÄµ±îÁö ¿Ï·áÇØ¾ß µî·ÏµÊ)
+@Service // ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ì³Ê¿ï¿½ ï¿½ï¿½ï¿½(root-context.xmlï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½Äµï¿½ï¿½ï¿½ï¿½ ï¿½Ï·ï¿½ï¿½Ø¾ï¿½ ï¿½ï¿½Ïµï¿½)
 
 public class BoardServiceImpl implements BoardService{
-	// ¼­ºñ½º°¡ DAO(Mapper.java)¸¦ È£ÃâÇÑ´Ù¸é ¼±¾ðÀ» ÇÏ°í ÀÇÁ¸¼ºÁÖÀÔÀ» ÇØ¾ßÇÕ´Ï´Ù.
-	// ÇØ´ç ÄÚµå¸¦ ÀÛ¼ºÇÏ¼¼¿ä.
+	// ï¿½ï¿½ï¿½ñ½º°ï¿½ DAO(Mapper.java)ï¿½ï¿½ È£ï¿½ï¿½ï¿½Ñ´Ù¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ï°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ø¾ï¿½ï¿½Õ´Ï´ï¿½.
+	// ï¿½Ø´ï¿½ ï¿½Úµå¸¦ ï¿½Û¼ï¿½ï¿½Ï¼ï¿½ï¿½ï¿½.
 	@Autowired
 	private ReplyMapper mapper;
 	@Autowired
 	private BoardMapper boardMapper;
+	@Autowired
+	private BoardAttachMapper attachMapper;
 	
-	// ¸®ÅÏÀÚ·áÇüÀÌ INSERT , DELETE , UPDATE ±¸¹®Àº »ç¿ëÀÚ Çàµ¿ ±âÁØÀ¸·Î ¸Þ¼­µå¸¦ ³ª´¯´Ï´Ù.
-	// ¸®ÅÏÀÚ·áÇüÀÌ ÀÖ´Â SELECT ±¸¹®Àº ÇÏ³ªÀÇ ¸Þ¼­µå°¡ ÇÏ³ªÀÇ Äõ¸®¹®À» ´ã´çÇÕ´Ï´Ù.
+	// ï¿½ï¿½ï¿½ï¿½ï¿½Ú·ï¿½ï¿½ï¿½ï¿½ï¿½ INSERT , DELETE , UPDATE ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½àµ¿ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¼ï¿½ï¿½å¸¦ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½.
+	// ï¿½ï¿½ï¿½ï¿½ï¿½Ú·ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½ SELECT ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ï³ï¿½ï¿½ï¿½ ï¿½Þ¼ï¿½ï¿½å°¡ ï¿½Ï³ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Õ´Ï´ï¿½.
 	@Override
 	public List<BoardVO> getList(SearchCriteria cri){
 			return boardMapper.getList(cri);
@@ -39,9 +43,20 @@ public class BoardServiceImpl implements BoardService{
 	public BoardVO select(long bno) {
 		return boardMapper.select(bno);
 	}
+	
+	@Transactional
 	@Override
 	public void insert(BoardVO vo) {
 		 boardMapper.insert(vo);
+		 
+		 if(vo.getAttachList() == null || vo.getAttachList().size()<=0) {
+			 return ;
+		 }
+		 vo.getAttachList().forEach(attach -> {
+			 attach.setBno(vo.getBno());
+			 attachMapper.insert(attach);
+			 
+		 });
 	}
 	@Transactional
 	public void delete(long bno) {
@@ -52,5 +67,11 @@ public class BoardServiceImpl implements BoardService{
 	public void update(BoardVO vo) {
 		boardMapper.update(vo);
 	}
+	
+	@Override
+	public List<BoardAttachVO> getAttachList(Long bno){
+		return attachMapper.findByBno(bno);
+	}
+	
 	
 }

@@ -2,18 +2,23 @@ package com.ict.service;
 
 import java.util.List;
 
+import com.ict.domain.BoardAttachVO;
 import com.ict.domain.BoardVO;
 import com.ict.domain.Criteria;
 import com.ict.domain.SearchCriteria;
 
-// ±¸Çö Å¬·¡½º BoardServiceImplÀÇ »À´ë°¡ µË´Ï´Ù.
+// ï¿½ï¿½ï¿½ï¿½ Å¬ï¿½ï¿½ï¿½ï¿½ BoardServiceImplï¿½ï¿½ ï¿½ï¿½ï¿½ë°¡ ï¿½Ë´Ï´ï¿½.
 public interface BoardService {
 
-		// ÀÎÅÍÆäÀÌ½º ³»¿¡ ¸ÕÀú ¸Ş¼­µå¸¦ ¼±¾ğÇÏ°í , IMPLÅ¬·¡½º¿¡¼­ ±¸ÇöÇÕ´Ï´Ù.
+		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ì½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ş¼ï¿½ï¿½å¸¦ ï¿½ï¿½ï¿½ï¿½ï¿½Ï°ï¿½ , IMPLÅ¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Õ´Ï´ï¿½.
 	public List<BoardVO> getList(SearchCriteria cri);
 	public int countPageNum(SearchCriteria cri);
 	public BoardVO select(long bno);
 	public void insert(BoardVO vo);
 	public void delete(long bno);
 	public void update(BoardVO vo);
+	
+	// ê²Œì‹œë¬¼ì— ì—°ë™ëœ ì²¨ë¶€íŒŒì¼ ëª©ë¡ ê°€ì ¸ì˜¤ê¸° 
+	public List<BoardAttachVO> getAttachList(Long bno);
+	
 }

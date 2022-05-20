@@ -184,15 +184,30 @@
         	e.preventDefault();
         	
         	// 2. var forObj = $("form"); 로 폼태그를 가져옵니다.
-        	var forObj =$("form");
+        	var formObj =$("form");
         	
         	// 3. 5월19일 수업에선 첨부파일 내에 들어있던 이미지 정보를 콘솔에 찍기만하고 조욜하고
         	// 내일 수업에 DB에 넣는 부분까지 진행함.
         	
-        	$(".uploadResult ul li").each(function(i,obj){
-        		console.log($(obj));
-        	});
+        	var str="";
         	
+        	
+        	$(".uploadResult ul li").each(function(i,obj){
+        	
+        		var jobj = $(obj);
+        		
+        		str += "<input type='hidden' name='attachList[" + i + "].fileName'"
+				+ " value='" + jobj.data("filename") + "'>"
+				+ "<input type='hidden' name='attachList[" + i + "].uuid'"
+				+ " value='" + jobj.data("uuid") + "'>"
+				+ "<input type='hidden' name='attachList[" + i + "].uploadPath'"
+				+ " value='" + jobj.data("path") + "'>"
+				+ "<input type='hidden' name='attachList[" + i + "].fileType'"
+				+ " value='" + jobj.data("type") + "'>";
+        			
+        	});
+        		// 폼태그에 위의 str내부 태그를 추가해주는 명령어, .submit()을 추가로 넣으면 제출 완료
+        		formObj.append(str).submit();
         	
         });
 	</script>
